@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ContosoCrafts.Web.Shared.Models;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using Stripe;
 
 namespace ContosoCrafts.Web.Server.Services
 {
@@ -63,8 +64,18 @@ namespace ContosoCrafts.Web.Server.Services
             logger.LogInformation($"Checking out from the JsonFilePRoductService...");
 
             // Create a payment flow from the items in the cart.
-
-            return new CheckoutResponse("unknown");
+            var options = new PaymentIntentCreateOptions
+            {
+              Amount = 2000,
+              Currency = "usd",
+              PaymentMethodTypes = new List<string>
+              {
+                "card",
+              },
+            };
+            var service = new PaymentIntentService();
+            var paymentIntent = await service.CreateAsync(options);
+            return new CheckoutResponse(paymentIntent.ClientSecret);
         }
     }
 }
