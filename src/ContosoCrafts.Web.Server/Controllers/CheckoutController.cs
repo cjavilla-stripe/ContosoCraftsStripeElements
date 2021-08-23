@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -59,7 +60,7 @@ namespace ContosoCrafts.Web.Server.Controllers
         {
             return new ConfigResponse
             {
-                StripePublicKey = configuration["Stripe:PublicKey"]
+                StripePublicKey = configuration["Stripe:PubKey"]
             };
         }
     }
