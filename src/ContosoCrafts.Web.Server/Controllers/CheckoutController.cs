@@ -54,9 +54,8 @@ namespace ContosoCrafts.Web.Server.Controllers
             logger.LogInformation("Order received...");
 
             var checkoutResponse = await productService.CheckOut(items);
-            var pubKey = configuration["Stripe:PubKey"];
 
-            await eventsHub.Clients.All.SendAsync("CheckoutSessionStarted", pubKey, checkoutResponse);
+            await eventsHub.Clients.All.SendAsync("CheckoutSessionStarted", checkoutResponse);
             return Ok();
         }
     }

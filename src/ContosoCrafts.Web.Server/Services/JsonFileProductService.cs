@@ -60,7 +60,7 @@ namespace ContosoCrafts.Web.Server.Services
 
         public async Task<CheckoutResponse> CheckOut(IEnumerable<CartItem> Items)
         {
-            logger.LogInformation($"Checking out from the JsonFilePRoductService...");
+            logger.LogInformation($"Checking out from the JsonFileProductService...");
 
             // Create a payment from the items in the cart.
 

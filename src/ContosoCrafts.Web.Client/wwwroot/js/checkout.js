@@ -1,7 +1,11 @@
-async function registerElements(pubKey) {
-  console.log("Register Stripe Elements");
+
+
+function registerElements(pubKey) {
+  console.log("Registering Stripe Elements...");
+
 }
 
-async function checkout(paymentIntentClientSecret) {
-  console.log("Checkout");
+function checkout(paymentIntentClientSecret) {
+  console.log("Checking out...");
+
 }
