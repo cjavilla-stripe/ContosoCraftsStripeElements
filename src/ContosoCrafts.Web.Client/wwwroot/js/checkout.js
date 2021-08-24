@@ -1,3 +1,7 @@
-export function checkout(pubKey, sessionId) {
-  console.log(`Checking out with session: ${sessionId}`);
+async function registerElements(pubKey) {
+  console.log("Register Stripe Elements");
+}
+
+async function checkout(paymentIntentClientSecret) {
+  console.log("Checkout");
 }

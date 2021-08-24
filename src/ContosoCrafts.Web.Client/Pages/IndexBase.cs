@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Blazored.Toast.Services;
 using ContosoCrafts.Web.Shared.Models;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
+using Microsoft.Extensions.Configuration;
 
 namespace ContosoCrafts.Web.Client.Pages
 {
@@ -27,8 +29,10 @@ namespace ContosoCrafts.Web.Client.Pages
         [Inject]
         private IToastService toastService { get; set; }
 
+        [Inject]
+        private IConfiguration Configuration { get; set; }
+
         private HubConnection hubConnection;
-        private IJSObjectReference module;
 
         protected override async Task OnInitializedAsync()
         {
@@ -38,29 +42,28 @@ namespace ContosoCrafts.Web.Client.Pages
                         .WithUrl(NavigationManager.ToAbsoluteUri("/events"))
                         .Build();
 
-            hubConnection.On<string, CheckoutResponse>("CheckoutSessionStarted", async (pubKey, chkResp) =>
+            hubConnection.On<CheckoutResponse>("CheckoutSessionStarted", async (chkResp) =>
             {
                 logger.LogInformation("CheckoutSessionStarted fired");
-
-                if (module == null)
-                {
-                    module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/checkout.js");
-                }
-
-                await module.InvokeVoidAsync("checkout", pubKey, chkResp.CheckoutSessionID);
+                await JSRuntime.InvokeVoidAsync("checkout", chkResp.PaymentIntentClientSecret);
             });
 
             await hubConnection.StartAsync();
         }
 
+        protected override async void OnAfterRender(bool firstRender)
+        {
+            if(firstRender)
+            {
+                var client = ClientFactory.CreateClient("localapi");
+                var config = await client.GetFromJsonAsync<ConfigResponse>("/api/checkout/config");
+                await JSRuntime.InvokeVoidAsync("registerElements", config.StripePublicKey);
+            }
+        }
+
         public async ValueTask DisposeAsync()
         {
             await hubConnection.DisposeAsync();
-
-            if (module != null)
-            {
-                await module.DisposeAsync();
-            }
         }
     }
 }

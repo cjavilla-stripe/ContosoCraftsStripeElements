@@ -39,6 +39,15 @@ namespace ContosoCrafts.Web.Server.Controllers
             this.configuration = configuration;
         }
 
+        [Route("config")]
+        public ConfigResponse Config()
+        {
+            return new ConfigResponse
+            {
+                StripePublicKey = configuration["Stripe:PubKey"]
+            };
+        }
+
         [HttpPost]
         public async Task<ActionResult> CheckoutOrder([FromBody]IEnumerable<CartItem> items, [FromServices] IServiceProvider sp)
         {
@@ -54,32 +63,6 @@ namespace ContosoCrafts.Web.Server.Controllers
 
             await eventsHub.Clients.All.SendAsync("CheckoutSessionStarted", pubKey, checkoutResponse);
             return Ok();
-        }
-
-        [HttpGet("session")]
-        public async Task<ActionResult> CheckoutSuccess(string session_id)
-        {
-            // var sessionService = new SessionService();
-            // Session session = await sessionService.GetAsync(session_id);
-
-            var checkoutInfo = new CheckoutInfo
-            {
-                AmountTotal = 0, //session.AmountTotal.Value,
-                CustomerEmail = "Unknown" // session.CustomerDetails.Email
-            };
-
-            var checkoutStr = JsonSerializer.Serialize<CheckoutInfo>(checkoutInfo);
-            await cache.SetStringAsync("checkout/info", checkoutStr);
-            return Redirect("/checkout/success");
-        }
-
-        [HttpGet("info")]
-        public async Task<ActionResult> GetCheckoutInfo()
-        {
-            var checkoutStr = await cache.GetAsync("checkout/info");
-            var checkoutInfo = JsonSerializer.Deserialize<CheckoutInfo>(checkoutStr);
-
-            return Ok(checkoutInfo);
         }
     }
 }
