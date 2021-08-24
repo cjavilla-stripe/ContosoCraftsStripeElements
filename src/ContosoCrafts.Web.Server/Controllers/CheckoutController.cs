@@ -53,12 +53,7 @@ namespace ContosoCrafts.Web.Server.Controllers
         {
             logger.LogInformation("Order received...");
 
-            // Build the URL to which the customer will be redirected after paying.
-            var host = $"{Request.Scheme}://{Request.Host.ToString()}";
-            var server = sp.GetRequiredService<IServer>();
-            var callbackRoot = server.Features.Get<IServerAddressesFeature>().Addresses.FirstOrDefault();
-
-            var checkoutResponse = await productService.CheckOut(items, callbackRoot);
+            var checkoutResponse = await productService.CheckOut(items);
             var pubKey = configuration["Stripe:PubKey"];
 
             await eventsHub.Clients.All.SendAsync("CheckoutSessionStarted", pubKey, checkoutResponse);

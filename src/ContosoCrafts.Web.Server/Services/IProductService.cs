@@ -9,6 +9,6 @@ namespace ContosoCrafts.Web.Server.Services
         Task AddRating(string productId, int rating);
         Task<IEnumerable<Product>> GetProducts();
         Task<Product> GetProduct(string id);
-        Task<CheckoutResponse> CheckOut(IEnumerable<CartItem> Items, string callbackRoot);
+        Task<CheckoutResponse> CheckOut(IEnumerable<CartItem> Items);
     }
 }
