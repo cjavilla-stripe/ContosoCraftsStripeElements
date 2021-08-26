@@ -63,14 +63,15 @@ namespace ContosoCrafts.Web.Server.Services
         {
             logger.LogInformation($"Checking out from the JsonFilePRoductService...");
 
-            // Create a payment flow from the items in the cart.
+            // Create a payment intent to charge for the items in the cart.
             var options = new PaymentIntentCreateOptions
             {
               Amount = 2000,
-              Currency = "usd",
+              Currency = "eur",
               PaymentMethodTypes = new List<string>
               {
                 "card",
+                "ideal",
               },
             };
             var service = new PaymentIntentService();

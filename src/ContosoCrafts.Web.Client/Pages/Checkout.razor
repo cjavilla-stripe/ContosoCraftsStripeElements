@@ -2,25 +2,8 @@
 @inject NavigationManager NavManager
 @inject IHttpClientFactory ClientFactory
 
-@if (CheckoutSessionInfo != null)
-{
-    <div>
-        Thank you, @CheckoutSessionInfo.CustomerEmail!
-    </div>
-    <div>
-        Total: @string.Format("{0:C}", CheckoutSessionInfo.AmountTotal / 100)
-    </div>
-}
+<div>
+    <h2>Thanks for your purchase!</h2>
 
-@code {
-    protected CheckoutInfo CheckoutSessionInfo { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var client = ClientFactory.CreateClient("localapi");
-        CheckoutSessionInfo = await client.GetFromJsonAsync<CheckoutInfo>($"/api/checkout/info");
-        StateHasChanged();
-
-        await base.OnInitializedAsync();
-    }
-}
+    <a href="/">Continue shopping</a>
+</div>
