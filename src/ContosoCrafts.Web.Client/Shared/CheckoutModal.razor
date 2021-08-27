@@ -13,32 +13,46 @@
                 </button>
             </div>
             <div class="modal-body">
+                <h3>Summary</h3>
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Items != null)
+                        {
+                            @foreach (var item in Items)
+                            {
+                                <tr>
+                                    <td>@item.Title</td>
+                                    <td>@item.Quantity</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <hr>
                 <div class="card">
                     <div class="card-body">
-                        <table class="table table-striped">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Quantity</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Items != null)
-                                {
-                    @foreach (var item in Items)
-                    {
-    <tr>
-        <td>@item.Title</td>
-        <td>@item.Quantity</td>
-    </tr>
-}}
-                            </tbody>
-                        </table>
+                        <div class="form-group">
+                            <label for="cardholder-name">Billing Name</label>
+                            <input type="text" id="cardholder-name" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="card-element">Payment details</label>
+                            <div id="card-element"></div>
+                        </div>
+                        <div class="alert alert-danger" hidden id="card-error" role="alert">
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#checkoutModal" @onclick="(e => SubmitCheckout())">Submit</button>
+                <button class="btn btn-primary" @onclick="(e => SubmitCheckout())">Submit</button>
             </div>
         </div>
     </div>
@@ -47,9 +61,18 @@
 @code {
     IEnumerable<CartItem> Items { get; set; }
 
+    private static Func<Task> _LocalClearCart;
+    private async Task LocalClearCart()
+    {
+        await LocalStorage.RemoveItemAsync("state.cart");
+        Items = null;
+        await Aggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = 0 });
+    }
+
     protected override void OnInitialized()
     {
         Aggregator.Subscribe(this);
+        _LocalClearCart = LocalClearCart;
     }
 
     public async Task HandleAsync(CheckoutStarted cartUpdated)
@@ -65,12 +88,13 @@
         if (Items == null || !Items.Any()) return;
 
         var client = ClientFactory.CreateClient("localapi");
-        await LocalStorage.RemoveItemAsync("state.cart");
         await client.PostAsJsonAsync($"api/checkout", Items);
-
-        Items = null;
-        await Aggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = 0 });
-       
     }
 
+    [JSInvokable("ClearCart")]
+    public static void ClearCart()
+    {
+        Console.WriteLine("Clear cart");
+        _LocalClearCart.Invoke();
     }
+}
