@@ -1,6 +1,6 @@
 # ContosoCrafts (Dapr Edition)
 
-This repo contains a sample application that shows how to integrate Stripe Checkout into an ASP.NET Core application. The solution contains three projects.
+This repo contains a sample application that shows how to integrate Stripe Elements to create a custom payment form in an ASP.NET Core application. The solution contains three projects.
 
 - [Blazor Frontend](src/ContosoCrafts.Web.Client)
 - [ASP.NET Core Backend](src/ContosoCrafts.Web.Server)
@@ -40,4 +40,4 @@ Build and run the [ContosoCrafts.Web.Server](src/ContosoCrafts.Web.Server) proje
 
 - Visual Studio Code
 - .NET 5 SDK
-- A Stripe test account
+- A Stripe account
